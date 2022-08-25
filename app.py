@@ -43,7 +43,61 @@ def getGrams():
 
 # @app.route('/getEng', methods=['POST', 'GET'])
 # def getEng():
-    """Get """
+    """Get detail of Engineer"""
+    """Receives:
+            - engEmail
+       Sends:
+            - engAadhar
+            - engName
+            - engAddress
+            - engMobile
+            - engEmail
+            - engRole
+            - licenseNo
+            - validUpto
+    """
+    user_dict = request.get_json()
+
+    # ESTABLISH DB CONNECTION ############## 
+    conn = db.connect_db()
+    if conn == None:
+        return "Error Connecting to db", 500
+
+    cur = conn.cursor()
+
+    # Query to retreive engineer
+    get_eng_q = """
+                SELECT eng_aadhar,
+                       eng_name,
+                       eng_address,
+                       eng_mobile,
+                       eng_email,
+                       eng_role,
+                       license_no,
+                       valid_upto
+                FROM Engineering
+                WHERE eng_email=%s
+                """
+    cur.execute(get_eng_q, (user_dict['engEmail'],))
+
+    if cur.rowcount == 0:
+        cur.close()
+        conn.close()
+        return "No Data Associated to that email found", 404 
+
+    finalList = {'eng':[]}
+
+    for engAadhar, engName, engAddress, engMobile, engEmail, engRole, licenseNo, validUpto in cur.fetchall():
+        finalList['eng'].append({'engAadhar': engAadhar,
+            'engName': engName,
+            'engAddress': engAddress,
+            'engMobile': engMobile,
+            'engEmail': engEmail,
+            'engRole': engRole,
+            'licenseNo': licenseNo,
+            'validUpto': validUpto})
+
+    return jsonify(finalList), 200
 
 if __name__ == '__main__':
     app.run()
