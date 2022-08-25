@@ -34,7 +34,7 @@ def getGrams():
         conn.close()
         return "No GramPanchayats found", 404
 
-    finalList = dict()
+    finalList = {'gramPanchayatName':[], 'gramPanchayatID':[]}
 
     for gid, gname in cur.fetchall():
         finalList['gramPanchayatName'].append(gname)
