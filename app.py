@@ -41,8 +41,8 @@ def getGrams():
 
     return jsonify(finalList), 200
 
-# @app.route('/getEng', methods=['POST', 'GET'])
-# def getEng():
+@app.route('/getEng', methods=['POST', 'GET'])
+def getEng():
     """Get detail of Engineer"""
     """Receives:
             - engEmail
