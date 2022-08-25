@@ -99,5 +99,55 @@ def getGrams():
 
     return jsonify(finalList), 200
 
+@app.route('/getClients', methods=['GET','POST'])
+def getClients():
+    """Get clients"""
+    """Receives:
+            - clientEmail
+       Sends:
+            - clientId
+            - clientAadhar
+            - clientName
+            - clientAddress
+            - clientMobile
+            - clientEmail
+    """
+
+    user_dict = request.get_json()
+
+    # ESTABLISH DB CONNECTION ############## 
+    conn = db.connect_db()
+    if conn == None:
+        return "Error Connecting to db", 500
+
+    cur = conn.cursor()
+
+    # Get clients query
+    get_client_q = """
+                   SELECT cli_id, cli_aadhar, cli_name, cli_address,
+                   cli_mobile, cli_email
+                   FROM Client
+                   WHERE cli_email=%s
+                   """
+    cur.execute(get_client_q, (user_dict['clientEmail'],))
+    
+    if cur.rowcount == 0:
+        cur.close()
+        conn.close()
+        return "No data found", 404
+
+    finalList = {'client':[]}
+
+    for clientId, clientAadhar, clientName, clientAddress, clientMobile, clientEmail in cur.fetchall():
+        finalList['client'].append({
+            'clientId': clientId, 
+            'clientAadhar': clientAadhar,
+            'clientName': clientName,
+            'clientAddress': clientAddress,
+            'clientMobile': clientMobile,
+            'clientEmail': clientEmail})
+
+    return jsonify(finalList), 200
+
 if __name__ == '__main__':
     app.run()
