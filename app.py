@@ -37,9 +37,14 @@ def getGrams():
     finalList = dict()
 
     for gid, gname in cur.fetchall():
-        finalList[gid] = gname
+        finalList['gramPanchayatName'].append(gname)
+        finalList['gramPanchayatID'].append(gid)
 
     return jsonify(finalList), 200
+
+# @app.route('/getEng', methods=['POST', 'GET'])
+# def getEng():
+    """Get """
 
 if __name__ == '__main__':
     app.run()
