@@ -27,7 +27,7 @@ def getGrams():
     g_name_id = """SELECT gram_id, gram_name
                    FROM GramPanchayat
                    WHERE g_district=%s"""
-    cur.execute(g_name_id, (user_dict[District]))
+    cur.execute(g_name_id, (user_dict[District],))
 
     if cur.rowcount == 0:
         cur.close()
