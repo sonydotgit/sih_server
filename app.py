@@ -150,7 +150,7 @@ def getpdetails():
 
     # Query
     get_p_q = """
-              SELECT project_id, client_id, eng_id, gram_id
+              SELECT project_id, cli_id, eng_id, gram_id
               FROM Project
               """
     cur.execute(get_p_q)
@@ -163,7 +163,7 @@ def getpdetails():
     finalList = {'project':[]}
 
     for pid, cid, eemail, gid in cur.fetchall():
-        finalList['client'].append({
+        finalList['project'].append({
             'client_id': cid,
             'eng_email': eemail,
             'gram_id': gid,
