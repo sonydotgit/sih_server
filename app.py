@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
 import db
+from notify_run import Notify
 import psycopg2 as psyco
 
 app = Flask(__name__)
@@ -14,7 +15,7 @@ def gramRule():
     """
     user_dict = request.get_json()
 
-    # ESTABLISH DB CONNECTION ############## 
+    # ESTABLISH DB CONNECTION ##############
     conn = db.connect_db()
     if conn == None:
         return "Error Connecting to db", 500
@@ -54,7 +55,7 @@ def getGrams():
     """
     user_dict = request.get_json()
 
-    # ESTABLISH DB CONNECTION ############## 
+    # ESTABLISH DB CONNECTION ##############
     conn = db.connect_db()
     if conn == None:
         return "Error Connecting to db", 500
@@ -92,7 +93,7 @@ def pdetails():
             - Success Response
     """
 
-    # ESTABLISH DB CONNECTION ############## 
+    # ESTABLISH DB CONNECTION ##############
     conn = db.connect_db()
     if conn == None:
         return "Error Connecting to db", 505
@@ -132,7 +133,7 @@ def pdetails():
 def getpdetails():
     """Send Client details"""
     """Receives:
-            - 
+            -
        Sends:
             - project_id
             - client_id
@@ -142,7 +143,7 @@ def getpdetails():
             - gram_id
     """
 
-    # ESTABLISH DB CONNECTION ############## 
+    # ESTABLISH DB CONNECTION ##############
     conn = db.connect_db()
     if conn == None:
         return "Error Connecting to db", 500
@@ -188,7 +189,7 @@ def updateStatus():
             - Push notification to all devices
     """
 
-    # ESTABLISH DB CONNECTION ############## 
+    # ESTABLISH DB CONNECTION ##############
     conn = db.connect_db()
     if conn == None:
         return "Error Connecting to db", 500
@@ -211,11 +212,15 @@ def updateStatus():
         notify = Notify()
         message = user_dict['project_id'] + ': ' + user_dict['p_step']
         notify.send(message)
+        cur.close()
+        conn.commit()
         return "Updating completed", 200
     except (Exception, psyco.DatabaseError) as e:
         print(e)
+        cur.close()
+        conn.close()
         return "Failed to update status", 500
-        
+
 @app.route('/getEng', methods=['POST', 'GET'])
 def getEng():
     """Get detail of Engineer"""
@@ -233,7 +238,7 @@ def getEng():
     """
     user_dict = request.get_json()
 
-    # ESTABLISH DB CONNECTION ############## 
+    # ESTABLISH DB CONNECTION ##############
     conn = db.connect_db()
     if conn == None:
         return "Error Connecting to db", 500
@@ -258,7 +263,7 @@ def getEng():
     if cur.rowcount == 0:
         cur.close()
         conn.close()
-        return "No Data Associated to that email found", 404 
+        return "No Data Associated to that email found", 404
 
     finalList = {'eng':[]}
 
@@ -290,7 +295,7 @@ def getClients():
 
     user_dict = request.get_json()
 
-    # ESTABLISH DB CONNECTION ############## 
+    # ESTABLISH DB CONNECTION ##############
     conn = db.connect_db()
     if conn == None:
         return "Error Connecting to db", 500
@@ -305,7 +310,7 @@ def getClients():
                    WHERE cli_email=%s
                    """
     cur.execute(get_client_q, (user_dict['clientEmail'],))
-    
+
     if cur.rowcount == 0:
         cur.close()
         conn.close()
@@ -315,7 +320,7 @@ def getClients():
 
     for clientId, clientAadhar, clientName, clientAddress, clientMobile, clientEmail in cur.fetchall():
         finalList['client'].append({
-            'clientId': clientId, 
+            'clientId': clientId,
             'clientAadhar': clientAadhar,
             'clientName': clientName,
             'clientAddress': clientAddress,
