@@ -136,6 +136,8 @@ def getpdetails():
        Sends:
             - project_id
             - client_id
+            - client_aadhar
+            - client_name
             - eng_email
             - gram_id
     """
@@ -148,8 +150,10 @@ def getpdetails():
 
     # Query
     get_p_q = """
-              SELECT project_id, cli_id, eng_id, gram_id
-              FROM Project
+              SELECT A.project_id, A.cli_id, A.eng_id, A.gram_id,
+              B.cli_aadhar, B.cli_name
+              FROM Project A, Client B
+              WHERE A.cli_id=B.cli_id
               """
     cur.execute(get_p_q)
 
@@ -160,9 +164,11 @@ def getpdetails():
 
     finalList = {'project':[]}
 
-    for pid, cid, eemail, gid in cur.fetchall():
+    for pid, cid, eemail, gid, caadhar, cname in cur.fetchall():
         finalList['project'].append({
+            'client_aadhar': caadhar,
             'client_id': cid,
+            'client_name': cname,
             'eng_email': eemail,
             'gram_id': gid,
             'project_id': pid
