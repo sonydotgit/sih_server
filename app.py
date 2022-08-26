@@ -146,8 +146,6 @@ def getpdetails():
         return "Error Connecting to db", 500
     cur = conn.cursor()
 
-    user_dict = request.get_json()
-
     # Query
     get_p_q = """
               SELECT project_id, cli_id, eng_id, gram_id
