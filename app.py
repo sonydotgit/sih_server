@@ -4,6 +4,44 @@ import psycopg2 as psyco
 
 app = Flask(__name__)
 
+@app.route('/gramRule', methods=['POST', 'GET'])
+def gramRule():
+    """Get Rule JSON"""
+    """Receive:
+            - gramPanchayatID
+       Send:
+            - rules(json)
+    """
+    user_dict = request.get_json()
+
+    # ESTABLISH DB CONNECTION ############## 
+    conn = db.connect_db()
+    if conn == None:
+        return "Error Connecting to db", 500
+
+    cur = conn.cursor()
+
+    # Query
+    get_jrule_q = """
+                  SELECT j_rules
+                  From GramPanchayat
+                  WHERE gram_id=%s"""
+    cur.execute(get_jrule_q, (user_dict['gramPanchayatID'],))
+
+    if cur.rowcount == 0:
+        cur.close()
+        conn.close()
+        return "No data found", 404
+
+    jruleo = []
+
+    for jrule in cur.fetchall():
+        jruleo.append(jrule)
+
+    print(jruleo)
+
+    return jruleo, 200
+
 @app.route('/getGramPans', methods=['POST','GET'])
 def getGrams():
     """Get List of Gram Panchayats"""
@@ -41,6 +79,131 @@ def getGrams():
 
     return jsonify(finalList), 200
 
+@app.route('/putpdetails', methods=['GET', 'POST'])
+def pdetails():
+    """
+        Receives:
+            - project_id
+            - client_id
+            - gram_id
+            - eng_email
+            - Docs [Aadhar, property, dwg]
+        Sends:
+            - Success Response
+    """
+
+    # ESTABLISH DB CONNECTION ############## 
+    conn = db.connect_db()
+    if conn == None:
+        return "Error Connecting to db", 500
+
+    cur = conn.cursor()
+
+    user_dict = request.get_json()
+
+    # Query to insert
+    p_ins_q = """
+              INSERT INTO Project
+              (project_id, client_id, eng_id, gram_id)
+              VALUES
+              (%s, %s, %s, %s)
+              """
+
+    try:
+        cur.execute(p_ins_q, (user_dict['project_id'],
+                              user_dict['client_id'],
+                              user_dict['eng_email'],
+                              user_dict['gram_id']
+        ))
+        return "Insertion Done", 200
+    except (Exception, psyco.DatabaseError) as e:
+        print(e)
+        cur.close()
+        conn.close()
+        return "Error while inserting", 500
+
+##################################################
+
+@app.route('/getpdetails', methods=['GET', 'POST'])
+def getpdetails():
+    """Send Client details"""
+    """Receives:
+            - 
+       Sends:
+            - project_id
+            - client_id
+            - eng_email
+            - gram_id
+    """
+
+    # ESTABLISH DB CONNECTION ############## 
+    conn = db.connect_db()
+    if conn == None:
+        return "Error Connecting to db", 500
+    cur = conn.cursor()
+
+    user_dict = request.get_json()
+
+    # Query
+    get_p_q = """
+              SELECT project_id, client_id, eng_id, gram_id
+              FROM Project
+              """
+    cur.execute(get_p_q)
+
+    if cur.rowcount == 0:
+        cur.close()
+        conn.close()
+        return "No data found", 404
+
+    finalList = {'project':[]}
+
+    for pid, cid, eemail, gid in cur.fetchall():
+        finalList['client'].append({
+            'projec_id': pid, 
+            'client_id': cid,
+            'eng_email': eemail,
+            'gram_id': gid})
+
+    return jsonify(finalList), 200
+
+@app.route('/updateStatus', methods=['GET', 'POST'])
+def updateStatus():
+    """Update project status"""
+    """Receives:
+            - project_id
+            - emp_id
+            - assign_date
+            - p_step
+       Sends:
+            - Push notification to all devices
+    """
+
+    # ESTABLISH DB CONNECTION ############## 
+    conn = db.connect_db()
+    if conn == None:
+        return "Error Connecting to db", 500
+    cur = conn.cursor()
+
+    user_dict = request.get_json()
+
+    # Query
+    up_stat_q = """INSERT INTO ProjectStatus
+                   (project_id, emp_id, assign_date, p_step)
+                   VALUES
+                   (%s, %s, %s, %s)
+                """
+    try:
+        cur.execute(up_stat_q, (user_dict['project_id'],
+                                user_dict['emp_id'],
+                                user_dict['assign_date'],
+                                user_dict['p_step']
+        ))
+        return "Updating completed", 200
+    except (Exception, psyco.DatabaseError) as e:
+        print(e)
+        return "Failed to update status", 500
+        
 @app.route('/getEng', methods=['POST', 'GET'])
 def getEng():
     """Get detail of Engineer"""
