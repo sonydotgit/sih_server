@@ -95,7 +95,7 @@ def pdetails():
     # ESTABLISH DB CONNECTION ############## 
     conn = db.connect_db()
     if conn == None:
-        return "Error Connecting to db", 500
+        return "Error Connecting to db", 505
 
     cur = conn.cursor()
 
