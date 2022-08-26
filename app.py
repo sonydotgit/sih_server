@@ -116,8 +116,9 @@ def pdetails():
         cur.execute(p_ins_q, (user_dict['project_id'],
                               user_dict['client_id'],
                               user_dict['eng_email'],
-                              user_dict['gram_id']
+                              user_dict['gram_id'],
         ))
+        conn.commit()
         return "Insertion Done", 200
     except (Exception, psyco.DatabaseError) as e:
         print(e)
