@@ -5,6 +5,88 @@ import psycopg2 as psyco
 
 app = Flask(__name__)
 
+@app.route('/loginArch', methods=['POST', 'GET'])
+def loginArch():
+    """Login for Architecture"""
+    """Receive:
+            - eng_email
+            - password
+       Send:
+            - is_ok? (str)
+    """
+    # Get JSON
+    user_dict = request.get_json()
+
+    # ESTABLISH DB CONNECTION ##############
+    conn = db.connect_db()
+    if conn == None:
+        return "Error Connecting to db", 500
+    cur = conn.cursor()
+
+    # Query
+    check_eng_q = """SELECT eng_email, password
+                     FROM Engineering
+                     WHERE eng_email=%s
+                  """
+    cur.execute(check_eng_q, (user_dict['eng_email'],))
+
+    if cur.rowcount == 0:
+        print("no data found")
+        cur.close()
+        conn.close()
+        return "Incorrect Credentials", 404
+
+    for eng_email, pswd in cur.fetchall():
+        if pswd == user_dict['password']:
+            cur.close()
+            conn.close()
+            return "AllOK", 200
+
+    cur.close()
+    conn.close()
+    return "Incorrect Credentials", 500
+
+@app.route('/loginClient', methods=['POST', 'GET'])
+def loginClient():
+    """Login for Client"""
+    """Receive:
+            - cli_email
+            - password
+       Send:
+            - is_ok? (str)
+    """
+    # Get JSON
+    user_dict = request.get_json()
+
+    # ESTABLISH DB CONNECTION ##############
+    conn = db.connect_db()
+    if conn == None:
+        return "Error Connecting to db", 500
+    cur = conn.cursor()
+
+    # Query
+    check_eng_q = """SELECT cli_email, password
+                     FROM Client
+                     WHERE cli_email=%s
+                  """
+    cur.execute(check_eng_q, (user_dict['cli_email'],))
+
+    if cur.rowcount == 0:
+        print("no data found")
+        cur.close()
+        conn.close()
+        return "Incorrect Credentials", 404
+
+    for eng_email, pswd in cur.fetchall():
+        if pswd == user_dict['password']:
+            cur.close()
+            conn.close()
+            return "AllOK", 200
+
+    cur.close()
+    conn.close()
+    return "Incorrect Credentials", 500
+
 @app.route('/gramRule', methods=['POST', 'GET'])
 def gramRule():
     """Get Rule JSON"""
@@ -185,6 +267,8 @@ def updateStatus():
             - emp_id
             - assign_date
             - p_step
+            - p_status
+            - p_status_brief
        Sends:
             - Push notification to all devices
     """
