@@ -104,7 +104,7 @@ def pdetails():
     # Query to insert
     p_ins_q = """
               INSERT INTO Project
-              (project_id, client_id, eng_id, gram_id)
+              (project_id, cli_id, eng_id, gram_id)
               VALUES
               (%s, %s, %s, %s)
               """
