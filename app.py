@@ -162,10 +162,11 @@ def getpdetails():
 
     for pid, cid, eemail, gid in cur.fetchall():
         finalList['client'].append({
-            'projec_id': pid, 
             'client_id': cid,
             'eng_email': eemail,
-            'gram_id': gid})
+            'gram_id': gid,
+            'project_id': pid
+            })
 
     return jsonify(finalList), 200
 
@@ -201,6 +202,9 @@ def updateStatus():
                                 user_dict['assign_date'],
                                 user_dict['p_step']
         ))
+        notify = Notify()
+        message = user_dict['project_id'] + ': ' + user_dict['p_step']
+        notify.send(message)
         return "Updating completed", 200
     except (Exception, psyco.DatabaseError) as e:
         print(e)
