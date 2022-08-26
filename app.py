@@ -109,6 +109,8 @@ def pdetails():
               (%s, %s, %s, %s)
               """
 
+    user_dict['project_id'] = user_dict['project_id'][:10]
+
     try:
         cur.execute(p_ins_q, (user_dict['project_id'],
                               user_dict['client_id'],
