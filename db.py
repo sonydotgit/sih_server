@@ -6,7 +6,7 @@ def connect_db():
     conn = None
     try:
         up.uses_netloc.append("postgres")
-        url = up.urlparse('postgres://dugpnbiy:kYBY72U4BknkRpFsj3Z3RyIcSV9EXgat@jelani.db.elephantsql.com/dugpnbiy')
+        url = up.urlparse('the url is being removed due to privacy issue')
         conn = psyco.connect(database=url.path[1:],
             user=url.username,
             password=url.password,

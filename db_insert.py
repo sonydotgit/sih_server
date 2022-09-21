@@ -1,36 +1,62 @@
-import db
+import db, json
 import psycopg2 as psyco
 
-conn = None
-try:
-    conn = db.connect_db()
-    cur = conn.cursor()
+def insert_jRule():
+    try:
+        conn = db.connect_db()
+        cur = conn.cursor()
 
-    commands = (
-        """
-        INSERT INTO GramPanchayat (
-            gram_id, 
-            gram_name,
-            g_district,
-            g_state
-        )
-        VALUES (
-            %s,
-            %s,
-            %s,
-            %s
-        )
-        """
-    )
+        json_val = 
 
-    cur.execute(commands, ('gram001', 'ketu gram', 'Davangere', 'Karnataka'))
-    cur.execute(commands, ('gram002', 'Harihar', 'Davangere', 'Karnataka'))
+        insert_jrule_q = """
+                         INSERT INTO GramPanchayat
+                         (j_rules) VALUES (%s)
+                         WHERE gram_id=%s
+                         """
 
-    cur.close()
-    conn.commit()
-except (Exception, psyco.DatabaseError) as e:
-    print(e)
-finally:
-    if conn is not None:
-        conn.close()
-        print('Database closed')
+# conn = None
+# try:
+#     conn = db.connect_db()
+#     cur = conn.cursor()
+# 
+#     commands = """
+#                INSERT INTO Engineering 
+#                (eng_id, eng_aadhar, eng_name, eng_address, eng_mobile,
+#                 eng_email, eng_role, license_no, valid_upto
+#                )
+#                VALUES
+#                (
+#                 %s, %s,%s,  %s,  %s,  %s,  %s,  %s,  %s 
+#                )
+#                """
+# 
+#     cur.execute(commands, ("eng001",
+#                            "739482078275",
+#                            "Kumar",
+#                            "SS Layout, Davangere",
+#                            "9382749302",
+#                            "kumar@mail.com",
+#                            "Architect",
+#                            "lic012456",
+#                            "02-05-2024"
+#     ))
+# 
+#     cur.execute(commands, ("eng002",
+#                            "733484058569",
+#                            "Kesar",
+#                            "RR Layout, Davangere",
+#                            "8562749349",
+#                            "kesar@mail.com",
+#                            "Structural",
+#                            "lic012294",
+#                            "02-01-2023"
+#     ))
+# 
+#     cur.close()
+#     conn.commit()
+# except (Exception, psyco.DatabaseError) as e:
+#     print(e)
+# finally:
+#     if conn is not None:
+#         conn.close()
+#         print('Database closed')
